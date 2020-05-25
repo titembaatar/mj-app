@@ -42,7 +42,26 @@ export default {
   /*
    ** Nuxt.js modules
    */
-  modules: [],
+  modules: [
+    [
+      '@nuxtjs/firebase',
+      {
+        config: {
+          apiKey: 'AIzaSyD6bcHI_2bkGKcG-1A0usFwJ-aVi-N_cbY',
+          authDomain: 'momotarojeanspaint.firebaseapp.com',
+          databaseURL: 'https://momotarojeanspaint.firebaseio.com',
+          projectId: 'momotarojeanspaint',
+          storageBucket: 'momotarojeanspaint.appspot.com',
+          messagingSenderId: '758411193582',
+          appId: '1:758411193582:web:bb8239cfbd9f984d2217ff'
+        },
+        services: {
+          auth: true,
+          firestore: true
+        }
+      }
+    ]
+  ],
   /*
    ** vuetify module configuration
    ** https://github.com/nuxt-community/vuetify-module
@@ -50,16 +69,25 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: true,
+      dark: false,
       themes: {
         dark: {
-          primary: colors.blue.darken2,
-          accent: colors.grey.darken3,
-          secondary: colors.amber.darken3,
-          info: colors.teal.lighten1,
-          warning: colors.amber.base,
-          error: colors.deepOrange.accent4,
-          success: colors.green.accent3
+          primary: '#24292E',
+          accent: '#90A4AE',
+          secondary: '#808890',
+          success: '#77DD77',
+          info: '#779ECB',
+          warning: '#F8C050',
+          error: '#FE6B64'
+        },
+        light: {
+          primary: '#24292E',
+          accent: '#607D8B',
+          secondary: '#404448',
+          success: '#77DD77',
+          info: '#779ECB',
+          warning: '#F8C050',
+          error: '#FE6B64'
         }
       }
     }
