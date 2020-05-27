@@ -1,5 +1,3 @@
-import colors from 'vuetify/es5/util/colors'
-
 export default {
   mode: 'universal',
   /*
@@ -37,6 +35,8 @@ export default {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
+    // TODO: Remove when upgrading to nuxt 2.13+
+    '@nuxt/components',
     '@nuxtjs/vuetify'
   ],
   /*
@@ -67,29 +67,12 @@ export default {
    ** https://github.com/nuxt-community/vuetify-module
    */
   vuetify: {
+    treeShake: true,
     customVariables: ['~/assets/variables.scss'],
-    theme: {
-      dark: false,
-      themes: {
-        dark: {
-          primary: '#24292E',
-          accent: '#90A4AE',
-          secondary: '#808890',
-          success: '#77DD77',
-          info: '#779ECB',
-          warning: '#F8C050',
-          error: '#FE6B64'
-        },
-        light: {
-          primary: '#24292E',
-          accent: '#607D8B',
-          secondary: '#404448',
-          success: '#77DD77',
-          info: '#779ECB',
-          warning: '#F8C050',
-          error: '#FE6B64'
-        }
-      }
+    optionsPath: '~/plugins/vuetify.js',
+    defaultAssets: {
+      font: true,
+      icons: 'mdi'
     }
   },
   /*
