@@ -50,7 +50,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app flat color="primary" dark>
+    <v-app-bar app flat dense color="primary" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-spacer />
       <v-btn text class="mx-1">
