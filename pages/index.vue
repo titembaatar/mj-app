@@ -10,7 +10,7 @@
             src="/paint.jpg"
           >
             <v-card-title>
-              <v-icon left>$paintLogo</v-icon>
+              <v-icon left large>$paintLogo</v-icon>
               ペイント
             </v-card-title>
           </v-img>
@@ -27,7 +27,7 @@
             src="/shift.jpg"
           >
             <v-card-title>
-              <v-icon left>mdi-calendar</v-icon>
+              <v-icon left>fa-calendar-alt</v-icon>
               シフト
             </v-card-title>
           </v-img>
@@ -44,7 +44,7 @@
             src="/admin.jpg"
           >
             <v-card-title>
-              <v-icon left>mdi-cog</v-icon>
+              <v-icon left>fa-user-cog</v-icon>
               アドミン
             </v-card-title>
           </v-img>

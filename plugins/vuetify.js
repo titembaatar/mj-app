@@ -27,7 +27,7 @@ export default {
     }
   },
   icons: {
-    iconfont: 'mdi',
+    iconfont: 'fa',
     values: {
       jeansFold: {
         component: jeansFold

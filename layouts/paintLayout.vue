@@ -20,7 +20,7 @@
       <v-divider />
 
       <v-list>
-        <v-list-group prepend-icon="mdi-store" no-action>
+        <v-list-group prepend-icon="fa-store" no-action>
           <template v-slot:activator>
             <v-list-item-content>
               <v-list-item-title>{{ navShopTitle }}</v-list-item-title>
@@ -54,15 +54,15 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-spacer />
       <v-btn text class="mx-1">
-        <span class="hidden-xs-only mr-1">解消</span>
-        <v-icon>
-          mdi-eraser
+        <span class="hidden-xs-only">解消</span>
+        <v-icon :right="this.$vuetify.breakpoint.smAndUp">
+          fa-eraser
         </v-icon>
       </v-btn>
       <v-btn text class="mx-1">
-        <span class="hidden-xs-only mr-1">印刷</span>
-        <v-icon>
-          mdi-printer
+        <span class="hidden-xs-only">印刷</span>
+        <v-icon :right="this.$vuetify.breakpoint.smAndUp">
+          fa-print
         </v-icon>
       </v-btn>
     </v-app-bar>

@@ -11,15 +11,13 @@
         </v-toolbar-title>
       </nuxt-link>
       <v-spacer />
-      <v-toolbar-items>
-        <v-btn text class="mx-1">
-          ログイン
-        </v-btn>
-        <v-btn text class="mx-1">
-          ショップ
-          <v-icon dark small>mdi-open-in-new</v-icon>
-        </v-btn>
-      </v-toolbar-items>
+      <v-btn color="secondary" depressed class="mx-1">
+        ログイン
+      </v-btn>
+      <v-btn text class="mx-1">
+        ショップ
+        <v-icon right dark x-small>fa-external-link-alt</v-icon>
+      </v-btn>
     </v-app-bar>
 
     <v-content app>
@@ -30,11 +28,11 @@
 
     <!-- <v-btn icon absolute bottom left @click="switchTheme()">
       <v-icon v-if="this.$vuetify.theme.dark == true">
-        mdi-brightness-7
+        fa-moon
       </v-icon>
 
       <v-icon v-if="this.$vuetify.theme.dark == false">
-        mdi-brightness-4
+        fa-sun
       </v-icon>
     </v-btn> -->
   </v-app>
