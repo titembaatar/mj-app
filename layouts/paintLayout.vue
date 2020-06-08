@@ -1,11 +1,13 @@
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawer" app temporary>
+    <v-navigation-drawer v-model="drawer" app temporary clipped>
       <v-list-item>
         <v-list-item-icon>
-          <v-icon x-large color="primary">$paintLogo</v-icon>
+          <v-icon x-large :color="aShop.color">$paintLogo</v-icon>
         </v-list-item-icon>
-        <v-list-item-title>ペイント アプリ</v-list-item-title>
+        <v-list-item-title :color="aShop.color">
+          ペイント アプリ
+        </v-list-item-title>
       </v-list-item>
 
       <v-divider />
@@ -19,17 +21,24 @@
 
       <v-divider />
 
-      <v-list>
+      <v-list flat dense>
         <v-list-group prepend-icon="fa-store" no-action>
           <template v-slot:activator>
             <v-list-item-content>
-              <v-list-item-title>{{ navShopTitle }}</v-list-item-title>
+              <v-list-item-title>{{ aShop.display }}</v-list-item-title>
             </v-list-item-content>
           </template>
 
-          <v-list-item>
+          <v-list-item
+            v-for="shop in shops"
+            :key="shop.id"
+            @click="setShopActive(shop)"
+          >
             <v-list-item-content>
-              <v-list-item-title> TEST </v-list-item-title>
+              <v-list-item-title
+                :style="{ color: shop.data.color }"
+                v-text="shop.data.display"
+              />
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
@@ -74,14 +83,22 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'PaintLayout',
   data() {
     return {
-      drawer: false,
-      navShopTitle: '店舗',
-      navJeansTitle: 'ジーンズ'
+      drawer: false
     }
+  },
+  computed: {
+    ...mapState({
+      aShop: (state) => state.active.shop,
+      aJeans: (state) => state.active.jeans,
+      shops: (state) => state.firestore.data.shops,
+      jeans: (state) => state.firestore.data.jeans
+    })
   }
 }
 </script>

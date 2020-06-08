@@ -3,12 +3,9 @@
     <v-app-bar app elevate-on-scroll color="primary" dark>
       <nuxt-link class="d-flex align-center" to="/">
         <v-icon x-large>$logo</v-icon>
-        <v-toolbar-title
-          v-if="this.$vuetify.breakpoint.smAndUp"
-          class="font-weight-medium text-uppercase white--text ml-1"
-        >
+        <div v-if="this.$vuetify.breakpoint.smAndUp" class="my-title">
           {{ title }}
-        </v-toolbar-title>
+        </div>
       </nuxt-link>
       <v-spacer />
       <v-btn color="secondary" depressed class="mx-1">
@@ -54,11 +51,10 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-.noActive
-  text-decoration: none
-  outline: 0
-
-  .v-btn--active
-    &::before
-      opacity: 0
+.my-title
+  text-transform: uppercase
+  color: white
+  font-weight: medium
+  font-size: 1.5rem !important
+  margin-left: .5rem
 </style>

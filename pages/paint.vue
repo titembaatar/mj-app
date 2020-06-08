@@ -8,7 +8,7 @@
         <Pocket :layers="pockets[1].layers" :stitch="false" :sp="true" />
       </v-col>
     </v-row>
-    <v-row class="flex-grow-0"></v-row>
+    <v-row class="flex-grow-0"> </v-row>
   </v-container>
 </template>
 
@@ -21,14 +21,14 @@ export default {
     ...mapState({
       pockets: (state) => state.active.pockets
     })
+  },
+  // DEV Without trigger the fireStorek
+  async mounted() {
+    try {
+      await this.$store.dispatch('firestore/bindDB')
+    } catch (e) {
+      console.error(e)
+    }
   }
-  // DEV Without trigger the fireStore
-  // async mounted() {
-  //   try {
-  //     await this.$store.dispatch('firestore/bindDB')
-  //   } catch (e) {
-  //     console.error(e)
-  //   }
-  // }
 }
 </script>

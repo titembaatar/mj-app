@@ -1,7 +1,7 @@
 <template>
   <svg viewBox="0 0 500 500">
     <Base :stitch="stitch" :sp="sp" />
-    <Path
+    <BasePath
       v-for="layer in layers"
       :id="layer.id"
       :key="layer.id"
