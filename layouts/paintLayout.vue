@@ -46,13 +46,17 @@
         <v-list-group prepend-icon="$jeansFold" no-action>
           <template v-slot:activator>
             <v-list-item-content>
-              <v-list-item-title>{{ navJeansTitle }}</v-list-item-title>
+              <v-list-item-title>{{ aJeans.display }}</v-list-item-title>
             </v-list-item-content>
           </template>
 
-          <v-list-item>
+          <v-list-item
+            v-for="jean in jeans"
+            :key="jean.id"
+            @click="setJeanActive(jean)"
+          >
             <v-list-item-content>
-              <v-list-item-title> TEST </v-list-item-title>
+              <v-list-item-title v-text="jean.data.display" />
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
@@ -99,6 +103,14 @@ export default {
       shops: (state) => state.firestore.data.shops,
       jeans: (state) => state.firestore.data.jeans
     })
+  },
+  methods: {
+    setShopActive(obj) {
+      this.$store.commit('SET_SHOP_ACTIVE', obj)
+    },
+    SetJeanActive(obj) {
+      this.$store.commit('SET_JEAN_ACTIVE', obj)
+    }
   }
 }
 </script>

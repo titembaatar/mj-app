@@ -22,7 +22,6 @@ export default {
       pockets: (state) => state.active.pockets
     })
   },
-  // DEV Without trigger the fireStorek
   async mounted() {
     try {
       await this.$store.dispatch('firestore/bindDB')

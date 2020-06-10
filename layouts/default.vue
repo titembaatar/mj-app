@@ -18,9 +18,7 @@
     </v-app-bar>
 
     <v-content app>
-      <v-container>
-        <nuxt />
-      </v-container>
+      <nuxt />
     </v-content>
 
     <!-- <v-btn icon absolute bottom left @click="switchTheme()">

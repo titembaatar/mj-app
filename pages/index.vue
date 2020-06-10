@@ -1,54 +1,46 @@
 <template>
-  <v-container class="fill-height">
-    <v-row>
-      <v-col :cols="this.$vuetify.breakpoint.xsOnly ? 12 : 6">
-        <v-card to="/paint" color="secondary" outlined dark>
-          <v-img
-            class="align-end"
-            height="10rem"
-            lazy-src="/paint.jpg"
-            src="/paint.jpg"
-          >
-            <v-card-title>
-              <v-icon left large>$paintLogo</v-icon>
-              ペイント
-            </v-card-title>
-          </v-img>
-          <v-card-subtitle>バックポケットペイントのアプリへ</v-card-subtitle>
+  <v-container class="ma-0 pa-0">
+    <v-row no-gutters class="pa-2">
+      <v-col :cols="this.$vuetify.breakpoint.xsOnly ? 12 : 3" class="pr-1">
+        <v-card
+          to="/paint"
+          class="mb-2"
+          color="primary"
+          outlined
+          :light="this.$vuetify.theme.dark"
+          :dark="!this.$vuetify.theme.dark"
+        >
+          <v-card-title>
+            <v-icon left large>$paintLogo</v-icon>
+            ペイント
+          </v-card-title>
         </v-card>
-      </v-col>
 
-      <v-col :cols="this.$vuetify.breakpoint.xsOnly ? 12 : 6">
-        <v-card to="/shift" color="secondary" outlined dark>
-          <v-img
-            class="align-end"
-            height="10rem"
-            lazy-src="/shift.jpg"
-            src="/shift.jpg"
-          >
-            <v-card-title>
-              <v-icon left>fa-calendar-alt</v-icon>
-              シフト
-            </v-card-title>
-          </v-img>
-          <v-card-subtitle>シフトのアプリへ</v-card-subtitle>
+        <v-card
+          to="/shift"
+          class="mb-2"
+          color="primary"
+          outlined
+          :light="this.$vuetify.theme.dark"
+          :dark="!this.$vuetify.theme.dark"
+        >
+          <v-card-title>
+            <v-icon left>fa-calendar-alt</v-icon>
+            シフト
+          </v-card-title>
         </v-card>
-      </v-col>
 
-      <v-col :cols="this.$vuetify.breakpoint.xsOnly ? 12 : 6">
-        <v-card to="/admin" color="secondary" outlined dark>
-          <v-img
-            class="align-end"
-            height="10rem"
-            lazy-src="/admin.jpg"
-            src="/admin.jpg"
-          >
-            <v-card-title>
-              <v-icon left>fa-user-cog</v-icon>
-              アドミン
-            </v-card-title>
-          </v-img>
-          <v-card-subtitle>アドミンページへ</v-card-subtitle>
+        <v-card
+          to="/admin"
+          color="primary"
+          outlined
+          :light="this.$vuetify.theme.dark"
+          :dark="!this.$vuetify.theme.dark"
+        >
+          <v-card-title>
+            <v-icon left>fa-user-cog</v-icon>
+            アドミン
+          </v-card-title>
         </v-card>
       </v-col>
     </v-row>

@@ -109,7 +109,7 @@ export const mutations = {
     state.shop = object
   },
   SET_JEAN_ACTIVE(state, object) {
-    state.jean = object
+    state.jeans = object
   },
   SET_PATTERN(state, [n, id, display, icsp, i, j]) {
     state.pockets[i].layers[j].pattern = n

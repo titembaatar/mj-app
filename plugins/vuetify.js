@@ -4,25 +4,25 @@ import logo from '~/components/icons/IconLogo.vue'
 
 export default {
   theme: {
-    dark: false,
+    dark: true,
     themes: {
       dark: {
-        primary: '#24292E',
-        accent: '#90A4AE',
-        secondary: '#606670',
-        success: '#77DD77',
-        info: '#779ECB',
-        warning: '#F8C050',
-        error: '#FE6B64'
+        primary: '#1d2021',
+        accent: '#8ec07c',
+        secondary: '#eddbb2',
+        success: '#b8bb26',
+        info: '#83a598',
+        warning: '#fe8019',
+        error: '#fb4934'
       },
       light: {
-        primary: '#24292E',
-        accent: '#607D8B',
-        secondary: '#404448',
-        success: '#77DD77',
-        info: '#779ECB',
-        warning: '#F8C050',
-        error: '#FE6B64'
+        primary: '#282828',
+        accent: '#427b58',
+        secondary: '#3c3836',
+        success: '#79740e',
+        info: '#076678',
+        warning: '#af3a03',
+        error: '#9d0006'
       }
     }
   },
