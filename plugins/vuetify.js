@@ -4,7 +4,7 @@ import logo from '~/components/icons/IconLogo.vue'
 
 export default {
   theme: {
-    dark: true,
+    dark: false,
     themes: {
       dark: {
         primary: '#1d2021',

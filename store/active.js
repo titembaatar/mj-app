@@ -156,10 +156,12 @@ export const getters = {
     return [
       {
         id: 'limitedColor',
-        ic: true,
-        display: '限定',
-        colorDisplay: state.shop.colorDisplay,
-        color: state.shop.color
+        data: {
+          ic: true,
+          display: '限定',
+          colorDisplay: state.shop.colorDisplay,
+          color: state.shop.color
+        }
       }
     ]
   },

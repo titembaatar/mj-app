@@ -11,7 +11,7 @@
       :disabled="aShops.display === '店舗' ? true : false"
       @click="$emit('click', [index, object.id])"
     >
-      {{ object.display }}
+      {{ value === true ? object.data.display : object.display }}
     </v-btn>
   </v-btn-toggle>
 </template>

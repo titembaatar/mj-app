@@ -8,7 +8,9 @@
         <Pocket :layers="pockets[1].layers" :stitch="false" :sp="true" />
       </v-col>
     </v-row>
-    <v-row class="flex-grow-0"> </v-row>
+    <v-row>
+      <Buttons />
+    </v-row>
   </v-container>
 </template>
 

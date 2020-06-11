@@ -1,21 +1,28 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col>
-        <BtnGroup :objects="pockets" :value="false" />
-      </v-col>
-      <v-col>
-        <BtnGroup :objects="pockets[pocketActive].layers" :value="false" />
-      </v-col>
+  <v-container class="ma-0 pa-0">
+    <v-row justify="space-around">
+      <BtnGroup
+        :objects="pockets"
+        :value="false"
+        @click="setPocketActive($event)"
+      />
+
+      <BtnGroup
+        :objects="pockets[pocketActive].layers"
+        :value="false"
+        @click="setLayerActive($event)"
+      />
     </v-row>
-    <v-row>
+
+    <v-row justify="center">
       <BtnGroup
         :objects="displayPatterns"
         :value="true"
         @click="setPatternActive($event)"
       />
     </v-row>
-    <v-row>
+
+    <v-row justify="center">
       <BtnGroup
         :objects="displayColors"
         :value="true"
@@ -26,15 +33,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
-  props: {
-    tabPocket: {
-      type: Number,
-      default: null
-    }
-  },
   data() {
     return {
       pocketActive: 0,
@@ -51,29 +52,20 @@ export default {
       patterns: (state) => state.firestore.data.patterns,
       colors: (state) => state.firestore.data.colors
     }),
-    kidsPatterns() {
-      const kJ = this.patterns.filter((object) => object.kids === true)
-      return kJ
-    },
+    ...mapGetters({ shopColor: 'active/shopColor' }),
     displayPatterns() {
       if (this.aJeans.kids === true) {
-        return this.kidsPatterns
+        return this.patterns.filter((object) => object.data.kids === true)
       }
       return this.patterns
     },
-    noIcColors() {
-      const nIC = this.colors.filter((object) => object.ic === false)
-      return nIC.concat(this.$store.getters.shopColor)
-    },
-    icColors() {
-      const iC = this.colors.filter((object) => object.ic === true)
-      return iC.concat(this.$store.getters.shopColor)
-    },
     displayColors() {
       if (this.patternActive === 'ic') {
-        return this.icColors
+        const iC = this.colors.filter((object) => object.data.ic === true)
+        return iC.concat(this.shopColor)
       } else {
-        return this.noIcColors
+        const nIC = this.colors.filter((object) => object.data.ic === false)
+        return nIC.concat(this.shopColor)
       }
     }
   },

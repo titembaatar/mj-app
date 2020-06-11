@@ -34,5 +34,5 @@ export default {
 <style lang="sass">
 svg
   max-width: 100%
-  max-height: calc( 100vh - 256px )
+  max-height: calc( 100vh - 300px )
 </style>

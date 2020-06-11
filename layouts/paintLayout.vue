@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawer" app temporary clipped>
+    <v-navigation-drawer v-model="drawer" app temporary>
       <v-list-item>
         <v-list-item-icon>
           <v-icon x-large :color="aShop.color">$paintLogo</v-icon>
