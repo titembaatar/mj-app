@@ -31,7 +31,7 @@
         </v-card>
 
         <v-card
-          to="/admin"
+          to="/admin/shops"
           color="primary"
           outlined
           :light="this.$vuetify.theme.dark"
