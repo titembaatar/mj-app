@@ -7,6 +7,12 @@
         :title="color.data.display"
         :color="color.data.color"
         :dark="color.data.color === '#ffffff' ? false : true"
+        @remove="
+          remove({
+            collection: 'colors',
+            child: color.id
+          })
+        "
       >
         <template v-slot:action-begin>
           <span>{{ color.id }}</span>
@@ -20,7 +26,7 @@
 import { mapState } from 'vuex'
 
 export default {
-  layout: 'adminLayout',
+  layout: 'dashboard',
   computed: {
     ...mapState({
       colors: (state) => state.firestore.data.colors
@@ -31,6 +37,11 @@ export default {
       await this.$store.dispatch('firestore/bindDB')
     } catch (e) {
       console.error(e)
+    }
+  },
+  methods: {
+    async remove(obj) {
+      await this.$store.dispatch('firestore/remove', obj)
     }
   }
 }

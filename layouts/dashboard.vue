@@ -58,7 +58,7 @@
 
       <template v-slot:append>
         <v-list nav dense>
-          <v-list-item link>
+          <v-list-item link @click="overlay = true">
             <v-list-item-icon>
               <v-icon>fa-plus-square</v-icon>
             </v-list-item-icon>
@@ -71,6 +71,8 @@
     <v-content app>
       <nuxt :nuxt-child-keu="$route.fullPath" />
     </v-content>
+
+    <FormOverlay :overlay="overlay" @clicked="overlay = $event" />
   </v-app>
 </template>
 
@@ -78,7 +80,8 @@
 export default {
   data() {
     return {
-      miniD: true
+      miniD: true,
+      overlay: false
     }
   },
   methods: {

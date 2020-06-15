@@ -30,6 +30,30 @@ export const actions = {
         })
       })
     }
+  },
+  async push(context, obj) {
+    await this.$fireStore
+      .collection(obj.collection.toString())
+      .doc(obj.child.toString())
+      .set(obj.data)
+      .then(function() {
+        console.log('Document successfully written!')
+      })
+      .catch(function(error) {
+        console.error('Error writing document: ', error)
+      })
+  },
+  async remove(context, obj) {
+    await this.$fireStore
+      .collection(obj.collection.toString())
+      .doc(obj.child.toString())
+      .delete()
+      .then(function() {
+        console.log('Removed')
+      })
+      .catch(function(error) {
+        console.error('Error :', error)
+      })
   }
 }
 

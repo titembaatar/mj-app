@@ -8,7 +8,9 @@
       <slot name="action-begin"></slot>
       <v-spacer />
       <v-icon> fa-pencil-alt </v-icon>
-      <v-icon class="ml-4"> fa-trash </v-icon>
+      <v-btn icon @click="$emit('remove')">
+        <v-icon class="ml-4"> fa-trash </v-icon>
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>

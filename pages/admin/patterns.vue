@@ -6,6 +6,12 @@
         :key="pattern.id"
         :title="pattern.data.display"
         color="#F5F5F5"
+        @remove="
+          remove({
+            collection: 'patterns',
+            child: pattern.id
+          })
+        "
       >
         <template v-slot:card-body>
           <v-row class="justify-center">
@@ -36,6 +42,11 @@ export default {
     ...mapState({
       patterns: (state) => state.firestore.data.patterns
     })
+  },
+  methods: {
+    async remove(obj) {
+      await this.$store.dispatch('firestore/remove', obj)
+    }
   }
 }
 </script>

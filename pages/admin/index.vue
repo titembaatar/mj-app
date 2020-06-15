@@ -4,6 +4,6 @@
 
 <script>
 export default {
-  layout: 'adminLayout'
+  layout: 'dashboard'
 }
 </script>

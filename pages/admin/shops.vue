@@ -7,6 +7,12 @@
         :title="shop.data.display"
         :color="shop.data.color"
         :dark="true"
+        @remove="
+          remove({
+            collection: 'shops',
+            child: shop.id
+          })
+        "
       >
         <template v-slot:card-body>
           <span>{{ shop.data.colorDisplay }}</span>
@@ -23,7 +29,7 @@
 import { mapState } from 'vuex'
 
 export default {
-  layout: 'adminLayout',
+  layout: 'dashboard',
   computed: {
     ...mapState({
       shops: (state) => state.firestore.data.shops
@@ -34,6 +40,11 @@ export default {
       await this.$store.dispatch('firestore/bindDB')
     } catch (e) {
       console.error(e)
+    }
+  },
+  methods: {
+    async remove(obj) {
+      await this.$store.dispatch('firestore/remove', obj)
     }
   }
 }

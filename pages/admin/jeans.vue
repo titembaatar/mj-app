@@ -6,6 +6,12 @@
         :key="jean.id"
         :title="jean.data.display"
         color="#F5F5F5"
+        @remove="
+          remove({
+            collection: 'jeans',
+            child: jean.id
+          })
+        "
       >
         <template v-slot:card-body>
           <v-row class="justify-center">
@@ -26,11 +32,16 @@
 import { mapState } from 'vuex'
 
 export default {
-  layout: 'adminLayout',
+  layout: 'dashboard',
   computed: {
     ...mapState({
       jeans: (state) => state.firestore.data.jeans
     })
+  },
+  methods: {
+    async remove(obj) {
+      await this.$store.dispatch('firestore/remove', obj)
+    }
   }
 }
 </script>
