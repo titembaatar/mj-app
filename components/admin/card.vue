@@ -1,16 +1,14 @@
 <template>
-  <v-card>
+  <v-card :color="color" :dark="dark" class="card">
     <v-card-title> {{ title }} </v-card-title>
-    <v-row>
+    <v-card-text>
       <slot name="card-body"> </slot>
-    </v-row>
+    </v-card-text>
     <v-card-actions>
-      <v-row>
-        <slot name="action-begin"></slot>
-        <v-spacer />
-        <v-icon> fa-pen </v-icon>
-        <v-icon> fa-trash </v-icon>
-      </v-row>
+      <slot name="action-begin"></slot>
+      <v-spacer />
+      <v-icon> fa-pencil-alt </v-icon>
+      <v-icon class="ml-4"> fa-trash </v-icon>
     </v-card-actions>
   </v-card>
 </template>
@@ -21,9 +19,19 @@ export default {
     title: {
       type: String,
       required: true
+    },
+    color: {
+      type: String,
+      required: true
+    },
+    dark: {
+      type: Boolean
     }
   }
 }
 </script>
 
-<style lang="sass" scoped></style>
+<style lang="sass" scoped>
+.card
+  min-width: 250px
+</style>
