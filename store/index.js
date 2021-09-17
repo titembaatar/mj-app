@@ -60,13 +60,31 @@ export const getters = {
   shops(state) {
     return state.shops
   },
-  jeans(state) {
-    return state.jeans
+  filteredJeans(state) {
+      const genericJeans = state.jeans.filter(
+        (object) => !(object.exclusive.length > 0)
+      )
+      const exclusiveJeans = state.jeans.filter(
+        (object) =>
+          object.exclusive.length > 0 &&
+          object.exclusive.includes(state.selection.selectedShop.id)
+        // is the selected shop id inside the exlusive array of the filtered objects ?
+      )
+      return genericJeans.concat(exclusiveJeans)
   },
   patterns(state) {
     return state.patterns
   },
-  colors(state) {
-    return state.colors
+  filteredColors(state) {
+    return state.colors.concat(
+      {
+        color: state.selection.selectedShop.color,
+        colorDisplay: state.selection.selectedShop.colorDisplay,
+        display: '限定',
+        ic: true,
+        id: `limitedcolor-${state.selection.selectedShop.id}`,
+        order: state.colors.length + 1,
+      }
+    )
   },
 }

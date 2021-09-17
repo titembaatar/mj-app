@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-container grid-list-xs>
-      <v-row class="pa-2">
+      <v-row class="items-start pa-2">
         <v-col>
           <NuxtLink to="/">
             <icon-logo height="3em" :color="selectedShop.color"></icon-logo>
@@ -21,30 +21,53 @@
         <v-col>
           <dropdown-menu
             :title="selectedJeans.display"
-            :items="jeans"
+            :items="filteredJeans"
             :color="selectedShop.color"
             @input="changeJeans"
           />
         </v-col>
-        <v-col>
-          <v-btn :color="selectedShop.color" outlined @click="reset()">
+        <v-col class="flex justify-end">
+          <v-btn
+            :color="selectedShop.color"
+            outlined
+            height="40px"
+            @click="reset()"
+          >
             リセット
           </v-btn>
         </v-col>
-        <v-col>
-          <v-btn :color="selectedShop.color" outlined>印刷</v-btn>
+        <v-col class="flex justify-end">
+          <v-btn :color="selectedShop.color" outlined height="40px">印刷</v-btn>
         </v-col>
       </v-row>
       <v-row class="px-4">
         <v-col>
-          <base-pocket :jeans="selectedJeans" :stitch="false" :sp="false" />
+          <svg viewBox="0 0 500 500">
+            <svg-pocket :jeans="selectedJeans" :stitch="false" :sp="false" />
+            <svg-pattern
+              v-for="(layer, index) in leftPocket"
+              :key="index"
+              :color="layer.color.color"
+              :path="layer.pattern.path"
+              :icsp="layer.pattern.icsp"
+            />
+          </svg>
         </v-col>
         <v-col>
-          <base-pocket
-            :jeans="selectedJeans"
-            :stitch="selectedJeans.stitch"
-            :sp="selectedJeans.stripes"
-          />
+          <svg viewBox="0 0 500 500">
+            <svg-pocket
+              :jeans="selectedJeans"
+              :stitch="selectedJeans.stitch"
+              :sp="selectedJeans.stripes"
+            />
+            <svg-pattern
+              v-for="(layer, index) in rightPocket"
+              :key="index"
+              :color="layer.color.color"
+              :path="layer.pattern.path"
+              :icsp="layer.pattern.icsp"
+            />
+          </svg>
         </v-col>
       </v-row>
       <v-row>
@@ -57,206 +80,73 @@
             fixed-tabs
             height="2em"
           >
-            <v-tab key="left"> 左 </v-tab>
-            <v-tab key="right"> 右 </v-tab>
+            <v-tab v-for="tab in tabs" :key="tab.key">{{ tab.display }}</v-tab>
           </v-tabs>
+
           <v-tabs-items v-model="selectedPocket">
-            <v-tab-item key="left">
-              <v-stepper v-model="selectedLeftLayer" flat>
+            <v-tab-item v-for="tab in tabs" :key="tab.key">
+              <v-stepper v-model="tab.selectedLayer" flat>
                 <v-stepper-header class="!shadow-none max-w-lg">
                   <v-btn
                     :color="selectedShop.color"
                     dark
                     class="align-self-center"
                     outlined
-                    :disabled="selectedLeftLayer <= 1 ? true : false"
-                    @click="selectedLeftLayer--"
+                    :disabled="tab.selectedLayer < 2 ? true : false"
+                    @click="tab.selectedLayer--"
                   >
                     戻る
                   </v-btn>
-                  <v-stepper-step
-                    :complete="selectedLeftLayer > 1"
-                    step="1"
-                    :color="selectedShop.color"
-                  >
-                  </v-stepper-step>
-                  <v-divider></v-divider>
-                  <v-stepper-step
-                    :complete="selectedLeftLayer > 2"
-                    step="2"
-                    :color="selectedShop.color"
-                  >
-                  </v-stepper-step>
-                  <v-divider></v-divider>
-                  <v-stepper-step
-                    :complete="selectedLeftLayer > 3"
-                    step="3"
-                    :color="selectedShop.color"
-                  >
-                  </v-stepper-step>
+                  <template v-for="layer in layersList">
+                    <v-stepper-step
+                      :key="`${tab.index}${layer}`"
+                      :complete="tab.selectedLayer > layer"
+                      :step="layer"
+                      :color="selectedShop.color"
+                    />
+                    <v-divider
+                      v-if="layer !== 3"
+                      :key="`divider-${tab.index}${layer}`"
+                    />
+                  </template>
                   <v-btn
                     :color="selectedShop.color"
                     dark
                     class="align-self-center"
                     outlined
-                    :disabled="selectedLeftLayer >= 3 ? true : false"
-                    @click="selectedLeftLayer++"
+                    :disabled="tab.selectedLayer > 2 ? true : false"
+                    @click="tab.selectedLayer++"
                   >
                     追加
                   </v-btn>
                 </v-stepper-header>
 
                 <v-stepper-items class="px-4">
-                  <v-stepper-content step="1" class="pa-0">
-                    <button-group
-                      ref="pattern-01"
-                      :array="patterns"
-                      :selected-shop="selectedShop"
-                      :color="selectedShop.color"
-                      class="pb-2"
-                      @change="changePatterns"
-                    />
-                    <button-group
-                      ref="color-01"
-                      :array="colors"
-                      :selected-shop="selectedShop"
-                      :color="selectedShop.color"
-                      @change="changeColors"
-                    />
-                  </v-stepper-content>
-                  <v-stepper-content step="2" class="pa-0">
-                    <button-group
-                      ref="pattern-02"
-                      :array="patterns"
-                      :selected-shop="selectedShop"
-                      :color="selectedShop.color"
-                      class="pb-2"
-                      @change="changePatterns"
-                    />
-                    <button-group
-                      ref="color-02"
-                      :array="colors"
-                      :selected-shop="selectedShop"
-                      :color="selectedShop.color"
-                      @change="changeColors"
-                    />
-                  </v-stepper-content>
-                  <v-stepper-content step="3" class="pa-0">
-                    <button-group
-                      ref="pattern-03"
-                      :array="patterns"
-                      :selected-shop="selectedShop"
-                      :color="selectedShop.color"
-                      class="pb-2"
-                      @change="changePatterns"
-                    />
-                    <button-group
-                      ref="color-03"
-                      :array="colors"
-                      :selected-shop="selectedShop"
-                      :color="selectedShop.color"
-                      @change="changeColors"
-                    />
-                  </v-stepper-content>
-                </v-stepper-items>
-              </v-stepper>
-            </v-tab-item>
-            <v-tab-item key="right">
-              <v-stepper v-model="selectedRightLayer" flat>
-                <v-stepper-header class="!shadow-none max-w-lg">
-                  <v-btn
-                    :color="selectedShop.color"
-                    dark
-                    class="align-self-center"
-                    outlined
-                    :disabled="selectedRightLayer <= 1 ? true : false"
-                    @click="selectedRightLayer--"
+                  <v-stepper-content
+                    v-for="layer in layersList"
+                    :key="`${tab.index}${layer}`"
+                    :step="layer"
+                    class="pa-0"
                   >
-                    戻る
-                  </v-btn>
-                  <v-stepper-step
-                    :complete="selectedRightLayer > 1"
-                    step="1"
-                    :color="selectedShop.color"
-                  >
-                  </v-stepper-step>
-                  <v-divider></v-divider>
-                  <v-stepper-step
-                    :complete="selectedRightLayer > 2"
-                    step="2"
-                    :color="selectedShop.color"
-                  >
-                  </v-stepper-step>
-                  <v-divider></v-divider>
-                  <v-stepper-step
-                    :complete="selectedRightLayer > 3"
-                    step="3"
-                    :color="selectedShop.color"
-                  >
-                  </v-stepper-step>
-                  <v-btn
-                    :color="selectedShop.color"
-                    dark
-                    class="align-self-center"
-                    outlined
-                    :disabled="selectedRightLayer >= 3 ? true : false"
-                    @click="selectedRightLayer++"
-                  >
-                    追加
-                  </v-btn>
-                </v-stepper-header>
-
-                <v-stepper-items class="px-4">
-                  <v-stepper-content step="1" class="pa-0">
-                    <button-group
-                      ref="pattern-11"
-                      :array="patterns"
-                      :selected-shop="selectedShop"
-                      :color="selectedShop.color"
-                      class="pb-2"
-                      @change="changePatterns"
-                    />
-                    <button-group
-                      ref="color-11"
-                      :array="colors"
-                      :selected-shop="selectedShop"
-                      :color="selectedShop.color"
-                      @change="changeColors"
-                    />
-                  </v-stepper-content>
-                  <v-stepper-content step="2" class="pa-0">
-                    <button-group
-                      ref="pattern-12"
-                      :array="patterns"
-                      :selected-shop="selectedShop"
-                      :color="selectedShop.color"
-                      class="pb-2"
-                      @change="changePatterns"
-                    />
-                    <button-group
-                      ref="color-12"
-                      :array="colors"
-                      :selected-shop="selectedShop"
-                      :color="selectedShop.color"
-                      @change="changeColors"
-                    />
-                  </v-stepper-content>
-                  <v-stepper-content step="3" class="pa-0">
-                    <button-group
-                      ref="pattern-13"
-                      :array="patterns"
-                      :selected-shop="selectedShop"
-                      :color="selectedShop.color"
-                      class="pb-2"
-                      @change="changePatterns"
-                    />
-                    <button-group
-                      ref="color-13"
-                      :array="colors"
-                      :selected-shop="selectedShop"
-                      :color="selectedShop.color"
-                      @change="changeColors"
-                    />
+                    <v-row
+                      class="flex flex-col justify-center items-center ma-0"
+                    >
+                      <button-group
+                        :ref="`pattern-${tab.index}${layer}`"
+                        :array="patterns"
+                        :selected-shop="selectedShop"
+                        :color="selectedShop.color"
+                        class="pb-2"
+                        @change="changePatterns"
+                      />
+                      <button-group
+                        :ref="`color-${tab.index}${layer}`"
+                        :array="filteredColors"
+                        :selected-shop="selectedShop"
+                        :color="selectedShop.color"
+                        @change="changeColors"
+                      />
+                    </v-row>
                   </v-stepper-content>
                 </v-stepper-items>
               </v-stepper>
@@ -269,22 +159,34 @@
 </template>
 
 <script>
+import svgPattern from '~/components/svgPattern.vue'
 export default {
+  components: { svgPattern },
   data() {
     return {
       selectedPattern: {},
       selectedColor: {},
       selectedPocket: 0,
-      selectedLeftLayer: 1,
-      selectedRightLayer: 1,
+      tabs: [
+        {
+          key: 'left',
+          display: '左',
+          index: 0,
+          selectedLayer: 1,
+        },
+        {
+          key: 'right',
+          display: '右',
+          index: 1,
+          selectedLayer: 1,
+        },
+      ],
+      layersList: [1, 2, 3],
     }
   },
   computed: {
     shops() {
       return this.$store.state.shops
-    },
-    jeans() {
-      return this.$store.state.jeans
     },
     patterns() {
       return this.$store.state.patterns
@@ -298,45 +200,88 @@ export default {
     selectedJeans() {
       return this.$store.state.selection.selectedJeans
     },
+    leftPocket() {
+      return this.$store.state.selection.pocket[0]
+    },
+    rightPocket() {
+      return this.$store.state.selection.pocket[1]
+    },
     selectedLayer() {
-      return [this.selectedLeftLayer - 1, this.selectedRightLayer - 1]
+      return [this.tabs[0].selectedLayer - 1, this.tabs[1].selectedLayer - 1]
+    },
+    filteredJeans() {
+      return this.$store.getters.filteredJeans
+    },
+    filteredColors() {
+      return this.$store.getters.filteredColors
     },
   },
   methods: {
     changeShop(value) {
       this.$store.commit('selection/SET_SHOP_SELECTION', value)
+      if (!this.selectedJeans.exclusive.includes(this.selectedShop.id)) {
+        this.changeJeans(this.$store.state.jeans[0])
+      }
+      // i is the index of pockets
+      for (let i = 0; i < 2; i++) {
+        // j is index of layers
+        for (let j = 0; j < 3; j++) {
+          if (
+            'id' in this.$store.state.selection.pocket[i][j].color &&
+            this.$store.state.selection.pocket[i][j].color.id.startsWith(
+              'limitedcolor'
+            )
+          ) {
+            this.$store.commit('selection/LIMITED_COLOR_CHANGER', {
+              pocket: i,
+              layer: j,
+              limitedcolor: {
+                color: value.color,
+                colorDisplay: value.colorDisplay,
+                display: '限定',
+                ic: true,
+                id: `limitedcolor-${value.id}`,
+                order: this.$store.state.colors.length + 1,
+              },
+            })
+          }
+          continue
+        }
+      }
     },
     changeJeans(value) {
       this.$store.commit('selection/SET_JEANS_SELECTION', value)
     },
     changePatterns(value) {
-      this.$store.commit('pocketdisplay/SET_PATTERN_SELECTION', {
+      this.$store.commit('selection/SET_PATTERN_SELECTION', {
         pocket: this.selectedPocket,
         layer: this.selectedLayer[this.selectedPocket],
         pattern: this.$store.state.patterns[value],
       })
     },
     changeColors(value) {
-      this.$store.commit('pocketdisplay/SET_COLOR_SELECTION', {
-        pocket: this.selectedPocket,
-        layer: this.selectedLayer[this.selectedPocket],
-        color: this.$store.state.colors[value],
-      })
+      if (typeof value !== 'undefined') {
+        this.$store.commit('selection/SET_COLOR_SELECTION', {
+          pocket: this.selectedPocket,
+          layer: this.selectedLayer[this.selectedPocket],
+          color: this.$store.getters.filteredColors[value],
+        })
+      }
     },
     reset() {
-      this.$store.commit('pocketdisplay/DISPLAY_RESET')
+      this.$store.commit('selection/PAINT_RESET')
       // i is the pocketIndex 0 for left, 1 for right
       for (let i = 1; i >= 0; i--) {
         this.selectedPocket = i
         // j is the selectedLayer, from 1 (bottom) to 3 (top)
         for (let j = 3; j >= 1; j--) {
-          i > 0 ? (this.selectedRightLayer = j) : (this.selectedLeftLayer = j)
+          this.tabs[i].selectedLayer = j
           if (
-            typeof this.$refs['pattern-' + i + j] !== 'undefined' &&
-            typeof this.$refs['color-' + i + j] !== 'undefined'
+            typeof this.$refs[`pattern-${i}${j}`] !== 'undefined' &&
+            typeof this.$refs[`color-${i}${j}`] !== 'undefined'
           ) {
-            this.$refs['pattern-' + i + j].reset()
-            this.$refs['color-' + i + j].reset()
+            this.$refs[`pattern-${i}${j}`][0].reset()
+            this.$refs[`color-${i}${j}`][0].reset()
           }
         }
       }

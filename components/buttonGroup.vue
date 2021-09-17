@@ -13,7 +13,6 @@ export default {
   props: {
     array: {
       type: Array,
-      required: true,
       default: () => ['Loading...'],
     },
     color: {
