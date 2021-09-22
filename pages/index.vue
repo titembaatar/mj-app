@@ -7,17 +7,4 @@
   </main>
 </template>
 
-<script>
-export default {
-  async mounted() {
-    try {
-      await this.$store.dispatch('bindShopsCollection')
-      await this.$store.dispatch('bindJeansCollection')
-      await this.$store.dispatch('bindPatternsCollection')
-      await this.$store.dispatch('bindColorsCollection')
-    } catch (e) {
-      console.error(e)
-    }
-  },
-}
-</script>
+<script></script>

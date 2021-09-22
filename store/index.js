@@ -1,10 +1,14 @@
 import { vuexfireMutations, firestoreAction } from 'vuexfire'
 
 export const state = () => ({
-  shops: null,
-  jeans: null,
-  patterns: null,
-  colors: null,
+  shops: [],
+  jeans: [],
+  patterns: [],
+  colors: [],
+  shopsLoaded: false,
+  jeansLoaded: false,
+  patternsLoaded: false,
+  colorsLoaded: false
 })
 export const mutations = {
   ...vuexfireMutations,
@@ -20,39 +24,35 @@ export const mutations = {
   SET_COLORS_COLLECTION: (state, colors) => {
     state.colors = colors
   },
+  DB_LOADED(state) {
+    state.shopsLoaded = true
+    state.jeansLoaded = true
+    state.patternsLoaded = true
+    state.colorsLoaded = true
+},
 }
 
 export const actions = {
-  bindShopsCollection: firestoreAction(async function ({ bindFirestoreRef }) {
-    const ref = this.$fire.firestore
-      .collection('shops').orderBy('id')
-    await bindFirestoreRef('shops', ref, { wait: true })
+  bindCollections: firestoreAction(async function({ bindFirestoreRef, commit }) {
+    const shops = this.$fire.firestore.collection('shops').orderBy('id')
+    const jeans = this.$fire.firestore.collection('jeans').orderBy('order')
+    const patterns = this.$fire.firestore.collection('patterns').orderBy('order')
+    const colors = this.$fire.firestore.collection('colors').orderBy('order')
+    await new Promise((resolve) => {
+      bindFirestoreRef('shops', shops)
+      bindFirestoreRef('jeans', jeans)
+      bindFirestoreRef('patterns', patterns)
+      bindFirestoreRef('colors', colors).then(res => {
+        commit('DB_LOADED')
+        resolve(res)
+    })
+    })
   }),
-  unbindShopsCollection: firestoreAction(function ({ unbindFirestoreRef }) {
+
+  unbindCollections: firestoreAction(function ({ unbindFirestoreRef }) {
     unbindFirestoreRef('shops', false)
-  }),
-  bindJeansCollection: firestoreAction(async function ({ bindFirestoreRef }) {
-    const ref = this.$fire.firestore
-      .collection('jeans').orderBy('order')
-    await bindFirestoreRef('jeans', ref, { wait: true })
-  }),
-  unbindJeansCollection: firestoreAction(function ({ unbindFirestoreRef }) {
     unbindFirestoreRef('jeans', false)
-  }),
-  bindPatternsCollection: firestoreAction(async function ({ bindFirestoreRef }) {
-    const ref = this.$fire.firestore
-      .collection('patterns').orderBy('order')
-    await bindFirestoreRef('patterns', ref, { wait: true })
-  }),
-  unbindPatternsCollection: firestoreAction(function ({ unbindFirestoreRef }) {
     unbindFirestoreRef('patterns', false)
-  }),
-  bindColorsCollection: firestoreAction(async function ({ bindFirestoreRef }) {
-    const ref = this.$fire.firestore
-      .collection('colors').orderBy('order')
-    await bindFirestoreRef('colors', ref, { wait: true })
-  }),
-  unbindColorsCollection: firestoreAction(function ({ unbindFirestoreRef }) {
     unbindFirestoreRef('colors', false)
   }),
 }
@@ -75,16 +75,26 @@ export const getters = {
   patterns(state) {
     return state.patterns
   },
-  filteredColors(state) {
-    return state.colors.concat(
-      {
+  loaded(state) {
+    return (
+      state.shopsLoaded &&
+      state.jeansLoaded &&
+      state.patternsLoaded &&
+      state.colorsLoaded
+    )
+  },
+  filteredColors(state, getters) {
+    if (getters.loaded === true) {return state.colors.concat({
         color: state.selection.selectedShop.color,
         colorDisplay: state.selection.selectedShop.colorDisplay,
         display: '限定',
         ic: true,
         id: `limitedcolor-${state.selection.selectedShop.id}`,
         order: state.colors.length + 1,
-      }
-    )
-  },
+    })
+    } else {
+    return state.colors
+    }
+  }
+
 }

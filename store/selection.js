@@ -15,18 +15,7 @@ export const state = () => ({
       stripeUpFill: '#ffffff',
       stripes: true,
     },
-    pocket: [
-      [
-        { pattern:{path: "M6 245l5 45h478l5-45zM0 120l3 80h494l3-80z"},color: {color: "transparent"}},
-        { pattern:{path: "M6 245l5 45h478l5-45zM0 120l3 80h494l3-80z"},color: {color: "transparent"}},
-        { pattern:{path: "M6 245l5 45h478l5-45zM0 120l3 80h494l3-80z"},color: {color: "transparent"}}
-      ],
-      [
-        { pattern:{path: "M6 245l5 45h478l5-45zM0 120l3 80h494l3-80z"},color: {color: "transparent"}},
-        { pattern:{path: "M6 245l5 45h478l5-45zM0 120l3 80h494l3-80z"},color: {color: "transparent"}},
-        { pattern:{path: "M6 245l5 45h478l5-45zM0 120l3 80h494l3-80z"},color: {color: "transparent"}}
-      ]
-    ]
+    pocket: [[],[]]
 })
 
 export const mutations = {
@@ -37,26 +26,27 @@ export const mutations = {
     state.selectedJeans = selection
   },
   SET_PATTERN_SELECTION: (state, payload) => {
-    state.pocket[payload.pocket][payload.layer].pattern = payload.pattern
+    if (state.pocket[payload.pocket][payload.layer]) {
+      state.pocket[payload.pocket][payload.layer].pattern = payload.pattern
+    } else {
+      state.pocket[payload.pocket].push({pattern:payload.pattern,color:''})      
+      state.pocket[payload.pocket][payload.layer].pattern = payload.pattern
+    }
   },
   SET_COLOR_SELECTION: (state, payload) => {
-    state.pocket[payload.pocket][payload.layer].color = payload.color
+    if (state.pocket[payload.pocket][payload.layer]) {
+      state.pocket[payload.pocket][payload.layer].color = payload.color
+    } else {
+      state.pocket[payload.pocket].push({ pattern:'',color:payload.color})
+    }
   },
   LIMITED_COLOR_CHANGER: (state, payload) => {
     state.pocket[payload.pocket][payload.layer].color = payload.limitedcolor
   },
+  DELETE_LAYER: (state,payload) => {
+    state.pocket[payload.pocket].pop()
+  },
   PAINT_RESET: (state) => {
-    state.pocket = [
-      [
-        { pattern:{path: "M6 245l5 45h478l5-45zM0 120l3 80h494l3-80z"},color: {color: "transparent"}},
-        { pattern:{path: "M6 245l5 45h478l5-45zM0 120l3 80h494l3-80z"},color: {color: "transparent"}},
-        { pattern:{path: "M6 245l5 45h478l5-45zM0 120l3 80h494l3-80z"},color: {color: "transparent"}}
-      ],
-      [
-        { pattern:{path: "M6 245l5 45h478l5-45zM0 120l3 80h494l3-80z"},color: {color: "transparent"}},
-        { pattern:{path: "M6 245l5 45h478l5-45zM0 120l3 80h494l3-80z"},color: {color: "transparent"}},
-        { pattern:{path: "M6 245l5 45h478l5-45zM0 120l3 80h494l3-80z"},color: {color: "transparent"}}
-      ]
-    ]
+    state.pocket = [[],[]]
   }
 }

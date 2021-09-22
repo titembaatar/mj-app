@@ -1,6 +1,14 @@
 <template>
   <v-app>
     <v-container grid-list-xs>
+      <v-overlay :value="!$store.getters.loaded">
+        <v-progress-circular
+          color="white"
+          indeterminate
+          size="100"
+          width="10"
+        />
+      </v-overlay>
       <v-row class="items-start pa-2">
         <v-col>
           <NuxtLink to="/">
@@ -97,6 +105,16 @@
                   >
                     戻る
                   </v-btn>
+                  <v-btn
+                    :color="selectedShop.color"
+                    dark
+                    class="align-self-center"
+                    outlined
+                    :disabled="!isNextLayerExists"
+                    @click="deleteLayer"
+                  >
+                    取消
+                  </v-btn>
                   <template v-for="layer in layersList">
                     <v-stepper-step
                       :key="`${tab.index}${layer}`"
@@ -137,14 +155,14 @@
                         :selected-shop="selectedShop"
                         :color="selectedShop.color"
                         class="pb-2"
-                        @change="changePatterns"
+                        @change="changePattern"
                       />
                       <button-group
                         :ref="`color-${tab.index}${layer}`"
                         :array="filteredColors"
                         :selected-shop="selectedShop"
                         :color="selectedShop.color"
-                        @change="changeColors"
+                        @change="changeColor"
                       />
                     </v-row>
                   </v-stepper-content>
@@ -215,6 +233,19 @@ export default {
     filteredColors() {
       return this.$store.getters.filteredColors
     },
+    isNextLayerExists() {
+      return (
+        this.$store.state.selection.pocket[this.selectedPocket].length ===
+        this.tabs[this.selectedPocket].selectedLayer
+      )
+    },
+  },
+  async mounted() {
+    try {
+      await this.$store.dispatch('bindCollections')
+    } catch (e) {
+      console.error(e)
+    }
   },
   methods: {
     changeShop(value) {
@@ -223,9 +254,9 @@ export default {
         this.changeJeans(this.$store.state.jeans[0])
       }
       // i is the index of pockets
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < this.$store.state.selection.pocket.length; i++) {
         // j is index of layers
-        for (let j = 0; j < 3; j++) {
+        for (let j = 0; j < this.$store.state.selection.pocket[i].length; j++) {
           if (
             'id' in this.$store.state.selection.pocket[i][j].color &&
             this.$store.state.selection.pocket[i][j].color.id.startsWith(
@@ -252,14 +283,16 @@ export default {
     changeJeans(value) {
       this.$store.commit('selection/SET_JEANS_SELECTION', value)
     },
-    changePatterns(value) {
-      this.$store.commit('selection/SET_PATTERN_SELECTION', {
-        pocket: this.selectedPocket,
-        layer: this.selectedLayer[this.selectedPocket],
-        pattern: this.$store.state.patterns[value],
-      })
+    changePattern(value) {
+      if (typeof value !== 'undefined') {
+        this.$store.commit('selection/SET_PATTERN_SELECTION', {
+          pocket: this.selectedPocket,
+          layer: this.selectedLayer[this.selectedPocket],
+          pattern: this.$store.state.patterns[value],
+        })
+      }
     },
-    changeColors(value) {
+    changeColor(value) {
       if (typeof value !== 'undefined') {
         this.$store.commit('selection/SET_COLOR_SELECTION', {
           pocket: this.selectedPocket,
@@ -267,6 +300,21 @@ export default {
           color: this.$store.getters.filteredColors[value],
         })
       }
+    },
+    deleteLayer() {
+      this.$store.commit('selection/DELETE_LAYER', {
+        pocket: this.selectedPocket,
+      })
+      this.$refs[
+        `pattern-${this.selectedPocket}${
+          this.tabs[this.selectedPocket].selectedLayer
+        }`
+      ][0].reset()
+      this.$refs[
+        `color-${this.selectedPocket}${
+          this.tabs[this.selectedPocket].selectedLayer
+        }`
+      ][0].reset()
     },
     reset() {
       this.$store.commit('selection/PAINT_RESET')
