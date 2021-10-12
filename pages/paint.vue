@@ -241,7 +241,10 @@ export default {
         : this.$store.state.patterns
     },
     kidsPatterns(){
-      return this.$store.state.patterns.filter(pattern => pattern.kids ? pattern : null)
+      const kidsP = this.$store.state.patterns.filter(pattern => pattern.kids ? pattern : null)
+      return this.pockets[this.selectedPocket].selectedLayer > 1
+        ? kidsP.filter(pattern => pattern.icsp === false ? pattern : null)
+        : kidsP
     },
     filteredColors() {
       return this.selectedPattern.icsp ? this.icColors : this.noBlackColors
@@ -264,7 +267,7 @@ export default {
     changeShop(value) {
       this.$store.commit('selection/SET_SHOP_SELECTION', value)
 
-      if (!this.selectedJeans.exclusive.includes(this.selectedShop.id)) {
+      if (this.selectedJeans.exclusive.includes(value.id) === false) {
         this.changeJeans(this.$store.state.jeans[0])
       }
 
