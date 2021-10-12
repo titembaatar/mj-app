@@ -88,14 +88,14 @@ export const getters = {
     )
   },
   filteredColors(state, getters) {
-    if (getters.loaded === true) {return state.colors.concat({
+    if (getters.loaded === true) {return [{
         color: state.selection.selectedShop.color,
         colorDisplay: state.selection.selectedShop.colorDisplay,
         display: '限定',
         ic: true,
         id: `limitedcolor-${state.selection.selectedShop.id}`,
         order: state.colors.length + 1,
-    })
+    }].concat(state.colors)
     } else {
     return state.colors
     }

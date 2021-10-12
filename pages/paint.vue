@@ -135,6 +135,7 @@
                     />
                   </template>
                   <v-btn
+                  v-if="!selectedPattern.icsp"
                     :color="selectedShop.color"
                     dark
                     class="align-self-center"
@@ -162,14 +163,14 @@
                         :selected-shop="selectedShop"
                         :color="selectedShop.color"
                         class="pb-2"
-                        @change="changePattern"
+                        @change="changePattern(pocket.index, layer)"
                       />
                       <button-group
                         :ref="`color-${pocket.index}${layer}`"
                         :array="filteredColors"
                         :selected-shop="selectedShop"
                         :color="selectedShop.color"
-                        @change="changeColor"
+                        @change="changeColor(pocket.index, layer, true)"
                       />
                     </v-row>
                   </v-stepper-content>
@@ -216,35 +217,40 @@ export default {
     selectedJeans() {
       return this.$store.state.selection.selectedJeans
     },
+    filteredJeans() {
+      return this.$store.getters.filteredJeans
+    },
     selectedLayers() {
       return [
         this.pockets[0].selectedLayer - 1,
         this.pockets[1].selectedLayer - 1,
       ]
     },
-    filteredJeans() {
-      return this.$store.getters.filteredJeans
-    },
-    filteredColors() {
-      return this.$store.getters.filteredColors
+    isNextLayerExists() {
+      return (
+        this.$store.state.selection.pocket[this.selectedPocket].length ===
+        this.pockets[this.selectedPocket].selectedLayer
+      )
     },
     filteredPatterns() {
-      return this.selectedJeans.kids ? this.kidsPatterns : this.$store.state.patterns
+      return this.selectedJeans.kids ? this.kidsPatterns : this.checkerPatterns
+    },
+    checkerPatterns(){
+      return this.pockets[this.selectedPocket].selectedLayer > 1
+        ? this.$store.state.patterns.filter(pattern => pattern.icsp === false ? pattern : null)
+        : this.$store.state.patterns
+    },
+    kidsPatterns(){
+      return this.$store.state.patterns.filter(pattern => pattern.kids ? pattern : null)
+    },
+    filteredColors() {
+      return this.selectedPattern.icsp ? this.icColors : this.noBlackColors
     },
     noBlackColors(){
       return this.$store.getters.filteredColors.filter(color => color.id !== 'black')
     },
     icColors(){
       return this.$store.getters.filteredColors.filter(color => color.ic ? color : null)
-    },
-    kidsPatterns(){
-      return this.$store.state.patterns.filter(pattern => pattern.kids ? pattern : null)
-    },
-    isNextLayerExists() {
-      return (
-        this.$store.state.selection.pocket[this.selectedPocket].length ===
-        this.pockets[this.selectedPocket].selectedLayer
-      )
     },
   },
   async mounted() {
@@ -284,38 +290,54 @@ export default {
     changeJeans(value) {
       this.$store.commit('selection/SET_JEANS_SELECTION', value)
     },
-    changePattern(value) {
+    changePattern(pocketIndex, layer) {
+      const value = this.$refs[`pattern-${pocketIndex}${layer}`][0].select;
       if (typeof value !== 'undefined') {
+        this.selectedPattern = this.filteredPatterns[value];
+        if (this.selectedPattern.icsp) {
+          this.$refs[`color-${pocketIndex}${layer}`][0].select = 0;
+          this.changeColor(pocketIndex, layer, false);
+        }
+        if (this.selectedColor.id === 'black' && this.selectedPattern.icsp === false) {
+          this.$refs[`color-${pocketIndex}${layer}`][0].select = 0;
+          this.changeColor(pocketIndex, layer, true);
+        }
         this.$store.commit('selection/SET_PATTERN_SELECTION', {
           pocket: this.selectedPocket,
           layer: this.selectedLayers[this.selectedPocket],
           pattern: this.filteredPatterns[value],
-        })
+        });
       }
     },
-    changeColor(value) {
+    changeColor(pocketIndex, layer, checker) {
+      let value = 0;
+      checker ? value = this.$refs[`color-${pocketIndex}${layer}`][0].select : value = 0;
       if (typeof value !== 'undefined') {
+        this.selectedColor = this.filteredColors[value];
         this.$store.commit('selection/SET_COLOR_SELECTION', {
           pocket: this.selectedPocket,
           layer: this.selectedLayers[this.selectedPocket],
-          color: this.$store.getters.filteredColors[value],
-        })
+          color: this.filteredColors[value],
+        });
       }
     },
     deleteLayer() {
-      this.$store.commit('selection/DELETE_LAYER', {
-        pocket: this.selectedPocket,
-      })
-      this.$refs[
+      const pattern = this.$refs[
         `pattern-${this.selectedPocket}${
           this.pockets[this.selectedPocket].selectedLayer
         }`
-      ][0].reset()
-      this.$refs[
+      ][0];
+      const color = this.$refs[
         `color-${this.selectedPocket}${
           this.pockets[this.selectedPocket].selectedLayer
         }`
-      ][0].reset()
+      ][0];
+      this.$store.commit('selection/DELETE_LAYER', {
+        pocket: this.selectedPocket,
+      });
+      this.selectedPattern = {icsp: false};
+      pattern.reset();
+      color.reset();
       if (this.pockets[this.selectedPocket].selectedLayer > 1)
         this.pockets[this.selectedPocket].selectedLayer -= 1
     },
