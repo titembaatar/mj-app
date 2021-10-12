@@ -18,6 +18,12 @@ export const state = () => ({
     pocket: [[],[]]
 })
 
+export const getters = {
+  selectedJeans(state) {
+    return state.selectedJeans
+  }
+}
+
 export const mutations = {
   SET_SHOP_SELECTION: (state, selection) => {
     state.selectedShop = selection

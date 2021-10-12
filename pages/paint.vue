@@ -215,7 +215,7 @@ export default {
       return this.$store.state.selection.selectedShop
     },
     selectedJeans() {
-      return this.$store.state.selection.selectedJeans
+      return this.$store.getters['selection/selectedJeans']
     },
     filteredJeans() {
       return this.$store.getters.filteredJeans
@@ -267,7 +267,7 @@ export default {
     changeShop(value) {
       this.$store.commit('selection/SET_SHOP_SELECTION', value)
 
-      if (this.selectedJeans.exclusive.includes(value.id) === false) {
+      if (this.selectedJeans.exclusive.length > 0 && this.selectedJeans.exclusive.includes(value.id) === false) {
         this.changeJeans(this.$store.state.jeans[0])
       }
 
