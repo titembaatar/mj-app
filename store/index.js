@@ -60,7 +60,8 @@ export const getters = {
   shops(state) {
     return state.shops
   },
-  filteredJeans(state) {
+  filteredJeans(state, getters) {
+    if (getters.loaded === true) {
       const genericJeans = state.jeans.filter(
         (object) => !(object.exclusive.length > 0)
       )
@@ -71,6 +72,9 @@ export const getters = {
         // is the selected shop id inside the exlusive array of the filtered objects ?
       )
       return genericJeans.concat(exclusiveJeans)
+    } else {
+      return state.jeans
+    }
   },
   patterns(state) {
     return state.patterns

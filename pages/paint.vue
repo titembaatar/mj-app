@@ -21,7 +21,7 @@
         <v-col>
           <dropdown-menu
             :title="selectedShop.display"
-            :items="shops"
+            :items="$store.state.shops"
             :color="selectedShop.color"
             @input="changeShop"
           />
@@ -34,17 +34,17 @@
             @input="changeJeans"
           />
         </v-col>
-        <v-col class="flex justify-end">
+        <v-col class="justify-end">
           <v-btn
             :color="selectedShop.color"
             outlined
             height="40px"
-            @click="reset()"
+            @click="paintReset()"
           >
             リセット
           </v-btn>
         </v-col>
-        <v-col class="flex justify-end">
+        <v-col class="justify-end">
           <v-btn :color="selectedShop.color" outlined height="40px">印刷</v-btn>
         </v-col>
       </v-row>
@@ -53,7 +53,7 @@
           <svg viewBox="0 0 500 500">
             <svg-pocket :jeans="selectedJeans" :stitch="false" :sp="false" />
             <svg-pattern
-              v-for="(layer, index) in leftPocket"
+              v-for="(layer, index) in $store.state.selection.pocket[0]"
               :key="index"
               :color="layer.color.color"
               :path="layer.pattern.path"
@@ -69,7 +69,7 @@
               :sp="selectedJeans.stripes"
             />
             <svg-pattern
-              v-for="(layer, index) in rightPocket"
+              v-for="(layer, index) in $store.state.selection.pocket[1]"
               :key="index"
               :color="layer.color.color"
               :path="layer.pattern.path"
@@ -78,7 +78,12 @@
           </svg>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row v-if="selectedShop.id==='000'" class="justify-center">
+          <v-alert type="info" outlined class="mt-8">
+            店舗を選択してください。
+          </v-alert>
+      </v-row>
+      <v-row v-if="selectedShop.id!='000'">
         <v-col align="center" class="py-1">
           <v-tabs
             v-model="selectedPocket"
@@ -88,20 +93,22 @@
             fixed-tabs
             height="2em"
           >
-            <v-tab v-for="tab in tabs" :key="tab.key">{{ tab.display }}</v-tab>
+            <v-tab v-for="pocket in pockets" :key="pocket.key">{{
+              pocket.display
+            }}</v-tab>
           </v-tabs>
 
           <v-tabs-items v-model="selectedPocket">
-            <v-tab-item v-for="tab in tabs" :key="tab.key">
-              <v-stepper v-model="tab.selectedLayer" flat>
+            <v-tab-item v-for="pocket in pockets" :key="pocket.key">
+              <v-stepper v-model="pocket.selectedLayer" flat>
                 <v-stepper-header class="!shadow-none max-w-lg">
                   <v-btn
                     :color="selectedShop.color"
                     dark
                     class="align-self-center"
                     outlined
-                    :disabled="tab.selectedLayer < 2 ? true : false"
-                    @click="tab.selectedLayer--"
+                    :disabled="pocket.selectedLayer < 2 ? true : false"
+                    @click="pocket.selectedLayer--"
                   >
                     戻る
                   </v-btn>
@@ -117,14 +124,14 @@
                   </v-btn>
                   <template v-for="layer in layersList">
                     <v-stepper-step
-                      :key="`${tab.index}${layer}`"
-                      :complete="tab.selectedLayer > layer"
+                      :key="`${pocket.index}${layer}`"
+                      :complete="pocket.selectedLayer > layer"
                       :step="layer"
                       :color="selectedShop.color"
                     />
                     <v-divider
                       v-if="layer !== 3"
-                      :key="`divider-${tab.index}${layer}`"
+                      :key="`divider-${pocket.index}${layer}`"
                     />
                   </template>
                   <v-btn
@@ -132,8 +139,8 @@
                     dark
                     class="align-self-center"
                     outlined
-                    :disabled="tab.selectedLayer > 2 ? true : false"
-                    @click="tab.selectedLayer++"
+                    :disabled="pocket.selectedLayer > 2 ? true : false"
+                    @click="pocket.selectedLayer++"
                   >
                     追加
                   </v-btn>
@@ -142,7 +149,7 @@
                 <v-stepper-items class="px-4">
                   <v-stepper-content
                     v-for="layer in layersList"
-                    :key="`${tab.index}${layer}`"
+                    :key="`${pocket.index}${layer}`"
                     :step="layer"
                     class="pa-0"
                   >
@@ -150,15 +157,15 @@
                       class="flex flex-col justify-center items-center ma-0"
                     >
                       <button-group
-                        :ref="`pattern-${tab.index}${layer}`"
-                        :array="patterns"
+                        :ref="`pattern-${pocket.index}${layer}`"
+                        :array="filteredPatterns"
                         :selected-shop="selectedShop"
                         :color="selectedShop.color"
                         class="pb-2"
                         @change="changePattern"
                       />
                       <button-group
-                        :ref="`color-${tab.index}${layer}`"
+                        :ref="`color-${pocket.index}${layer}`"
                         :array="filteredColors"
                         :selected-shop="selectedShop"
                         :color="selectedShop.color"
@@ -185,7 +192,7 @@ export default {
       selectedPattern: {},
       selectedColor: {},
       selectedPocket: 0,
-      tabs: [
+      pockets: [
         {
           key: 'left',
           display: '左',
@@ -203,29 +210,17 @@ export default {
     }
   },
   computed: {
-    shops() {
-      return this.$store.state.shops
-    },
-    patterns() {
-      return this.$store.state.patterns
-    },
-    colors() {
-      return this.$store.state.colors
-    },
     selectedShop() {
       return this.$store.state.selection.selectedShop
     },
     selectedJeans() {
       return this.$store.state.selection.selectedJeans
     },
-    leftPocket() {
-      return this.$store.state.selection.pocket[0]
-    },
-    rightPocket() {
-      return this.$store.state.selection.pocket[1]
-    },
-    selectedLayer() {
-      return [this.tabs[0].selectedLayer - 1, this.tabs[1].selectedLayer - 1]
+    selectedLayers() {
+      return [
+        this.pockets[0].selectedLayer - 1,
+        this.pockets[1].selectedLayer - 1,
+      ]
     },
     filteredJeans() {
       return this.$store.getters.filteredJeans
@@ -233,10 +228,22 @@ export default {
     filteredColors() {
       return this.$store.getters.filteredColors
     },
+    filteredPatterns() {
+      return this.selectedJeans.kids ? this.kidsPatterns : this.$store.state.patterns
+    },
+    noBlackColors(){
+      return this.$store.getters.filteredColors.filter(color => color.id !== 'black')
+    },
+    icColors(){
+      return this.$store.getters.filteredColors.filter(color => color.ic ? color : null)
+    },
+    kidsPatterns(){
+      return this.$store.state.patterns.filter(pattern => pattern.kids ? pattern : null)
+    },
     isNextLayerExists() {
       return (
         this.$store.state.selection.pocket[this.selectedPocket].length ===
-        this.tabs[this.selectedPocket].selectedLayer
+        this.pockets[this.selectedPocket].selectedLayer
       )
     },
   },
@@ -250,22 +257,17 @@ export default {
   methods: {
     changeShop(value) {
       this.$store.commit('selection/SET_SHOP_SELECTION', value)
+
       if (!this.selectedJeans.exclusive.includes(this.selectedShop.id)) {
         this.changeJeans(this.$store.state.jeans[0])
       }
-      // i is the index of pockets
-      for (let i = 0; i < this.$store.state.selection.pocket.length; i++) {
-        // j is index of layers
-        for (let j = 0; j < this.$store.state.selection.pocket[i].length; j++) {
-          if (
-            'id' in this.$store.state.selection.pocket[i][j].color &&
-            this.$store.state.selection.pocket[i][j].color.id.startsWith(
-              'limitedcolor'
-            )
-          ) {
+
+      this.$store.state.selection.pocket.forEach((pocket, pocketIndex) => {
+        pocket.forEach((layer, layerIndex) => {
+          if ('id' in layer.color && layer.color.id.startsWith('limited')) {
             this.$store.commit('selection/LIMITED_COLOR_CHANGER', {
-              pocket: i,
-              layer: j,
+              pocket: pocketIndex,
+              layer: layerIndex,
               limitedcolor: {
                 color: value.color,
                 colorDisplay: value.colorDisplay,
@@ -276,9 +278,8 @@ export default {
               },
             })
           }
-          continue
-        }
-      }
+        })
+      })
     },
     changeJeans(value) {
       this.$store.commit('selection/SET_JEANS_SELECTION', value)
@@ -287,8 +288,8 @@ export default {
       if (typeof value !== 'undefined') {
         this.$store.commit('selection/SET_PATTERN_SELECTION', {
           pocket: this.selectedPocket,
-          layer: this.selectedLayer[this.selectedPocket],
-          pattern: this.$store.state.patterns[value],
+          layer: this.selectedLayers[this.selectedPocket],
+          pattern: this.filteredPatterns[value],
         })
       }
     },
@@ -296,7 +297,7 @@ export default {
       if (typeof value !== 'undefined') {
         this.$store.commit('selection/SET_COLOR_SELECTION', {
           pocket: this.selectedPocket,
-          layer: this.selectedLayer[this.selectedPocket],
+          layer: this.selectedLayers[this.selectedPocket],
           color: this.$store.getters.filteredColors[value],
         })
       }
@@ -307,23 +308,25 @@ export default {
       })
       this.$refs[
         `pattern-${this.selectedPocket}${
-          this.tabs[this.selectedPocket].selectedLayer
+          this.pockets[this.selectedPocket].selectedLayer
         }`
       ][0].reset()
       this.$refs[
         `color-${this.selectedPocket}${
-          this.tabs[this.selectedPocket].selectedLayer
+          this.pockets[this.selectedPocket].selectedLayer
         }`
       ][0].reset()
+      if (this.pockets[this.selectedPocket].selectedLayer > 1)
+        this.pockets[this.selectedPocket].selectedLayer -= 1
     },
-    reset() {
+    paintReset() {
       this.$store.commit('selection/PAINT_RESET')
       // i is the pocketIndex 0 for left, 1 for right
       for (let i = 1; i >= 0; i--) {
         this.selectedPocket = i
         // j is the selectedLayer, from 1 (bottom) to 3 (top)
         for (let j = 3; j >= 1; j--) {
-          this.tabs[i].selectedLayer = j
+          this.pockets[i].selectedLayer = j
           if (
             typeof this.$refs[`pattern-${i}${j}`] !== 'undefined' &&
             typeof this.$refs[`color-${i}${j}`] !== 'undefined'
@@ -337,3 +340,10 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+svg {
+  max-height:60vh;
+  margin: auto;
+}
+</style>
