@@ -53,7 +53,7 @@
           <svg viewBox="0 0 500 500">
             <svg-pocket :jeans="selectedJeans" :stitch="false" :sp="false" />
             <svg-pattern
-              v-for="(layer, index) in $store.state.selection.pocket[0]"
+              v-for="(layer, index) in pocketsStore[0]"
               :key="index"
               :color="layer.color.color"
               :path="layer.pattern.path"
@@ -69,7 +69,7 @@
               :sp="selectedJeans.stripes"
             />
             <svg-pattern
-              v-for="(layer, index) in $store.state.selection.pocket[1]"
+              v-for="(layer, index) in pocketsStore[1]"
               :key="index"
               :color="layer.color.color"
               :path="layer.pattern.path"
@@ -78,7 +78,7 @@
           </svg>
         </v-col>
       </v-row>
-      <v-row v-if="selectedShop.id==='000'" class="justify-center">
+      <v-row v-if="selectedShop.id === '000'" class="justify-center">
           <v-alert type="info" outlined class="mt-8">
             店舗を選択してください。
           </v-alert>
@@ -86,29 +86,29 @@
       <v-row v-if="selectedShop.id!='000'">
         <v-col align="center" class="py-1">
           <v-tabs
-            v-model="selectedPocket"
+            v-model="pocketSelected"
             :color="selectedShop.color"
             :slider-color="selectedShop.color"
             centered
             fixed-tabs
             height="2em"
           >
-            <v-tab v-for="pocket in pockets" :key="pocket.key">{{
+            <v-tab v-for="pocket in pocketsBinder" :key="pocket.key">{{
               pocket.display
             }}</v-tab>
           </v-tabs>
 
-          <v-tabs-items v-model="selectedPocket">
-            <v-tab-item v-for="pocket in pockets" :key="pocket.key">
-              <v-stepper v-model="pocket.selectedLayer" flat>
+          <v-tabs-items v-model="pocketSelected">
+            <v-tab-item v-for="pocket in pocketsBinder" :key="pocket.key">
+              <v-stepper v-model="pocket.layerSelected" flat>
                 <v-stepper-header class="!shadow-none max-w-lg">
                   <v-btn
                     :color="selectedShop.color"
                     dark
                     class="align-self-center"
                     outlined
-                    :disabled="pocket.selectedLayer < 2 ? true : false"
-                    @click="pocket.selectedLayer--"
+                    :disabled="pocket.layerSelected < 2 ? true : false"
+                    @click="pocket.layerSelected--"
                   >
                     戻る
                   </v-btn>
@@ -125,7 +125,7 @@
                   <template v-for="layer in layersList">
                     <v-stepper-step
                       :key="`${pocket.index}${layer}`"
-                      :complete="pocket.selectedLayer > layer"
+                      :complete="pocket.layerSelected > layer"
                       :step="layer"
                       :color="selectedShop.color"
                     />
@@ -135,13 +135,13 @@
                     />
                   </template>
                   <v-btn
-                  v-if="!selectedPattern.icsp"
+                  v-if="!patternSelected.icsp"
                     :color="selectedShop.color"
                     dark
                     class="align-self-center"
                     outlined
-                    :disabled="pocket.selectedLayer > 2 ? true : false"
-                    @click="pocket.selectedLayer++"
+                    :disabled="pocket.layerSelected > 2 ? true : false"
+                    @click="pocket.layerSelected++"
                   >
                     追加
                   </v-btn>
@@ -159,7 +159,7 @@
                     >
                       <button-group
                         :ref="`pattern-${pocket.index}${layer}`"
-                        :array="filteredPatterns"
+                        :array="patternsFiltered"
                         :selected-shop="selectedShop"
                         :color="selectedShop.color"
                         class="pb-2"
@@ -167,7 +167,7 @@
                       />
                       <button-group
                         :ref="`color-${pocket.index}${layer}`"
-                        :array="filteredColors"
+                        :array="colorsFiltered"
                         :selected-shop="selectedShop"
                         :color="selectedShop.color"
                         @change="changeColor(pocket.index, layer, true)"
@@ -185,95 +185,84 @@
 </template>
 
 <script>
-import svgPattern from '~/components/svgPattern.vue'
+import { mapState, mapGetters } from 'vuex';
+import svgPattern from '~/components/svgPattern.vue';
+
 export default {
   components: { svgPattern },
   data() {
     return {
-      selectedPattern: {},
-      selectedColor: {},
-      selectedPocket: 0,
-      pockets: [
+      patternSelected: {},
+      colorSelected: {},
+      pocketSelected: 0,
+      pocketsBinder: [
         {
           key: 'left',
           display: '左',
           index: 0,
-          selectedLayer: 1,
+          layerSelected: 1,
         },
         {
           key: 'right',
           display: '右',
           index: 1,
-          selectedLayer: 1,
+          layerSelected: 1,
         },
       ],
       layersList: [1, 2, 3],
     }
   },
   computed: {
-    selectedShop() {
-      return this.$store.state.selection.selectedShop
-    },
-    selectedJeans() {
-      return this.$store.getters['selection/selectedJeans']
-    },
-    filteredJeans() {
-      return this.$store.getters.filteredJeans
-    },
-    selectedLayers() {
-      return [
-        this.pockets[0].selectedLayer - 1,
-        this.pockets[1].selectedLayer - 1,
-      ]
+    ...mapState(['patterns', 'jeans', 'color']),
+    ...mapState('selection', ['selectedShop', 'pocketsStore']),
+    ...mapGetters(['colorsWithShopColor', 'filteredJeans']),
+    ...mapGetters('selection', ['selectedJeans']),
+    layerSelected() {
+      return this.pocketsBinder[this.pocketSelected].layerSelected;
     },
     isNextLayerExists() {
-      return (
-        this.$store.state.selection.pocket[this.selectedPocket].length ===
-        this.pockets[this.selectedPocket].selectedLayer
-      )
+      return this.pocketsStore[this.pocketSelected].length === this.layerSelected;
     },
-    filteredPatterns() {
-      return this.selectedJeans.kids ? this.kidsPatterns : this.checkerPatterns
+    patternsFiltered() {
+      return this.selectedJeans.kids ? this.patternsKid : this.patternsChecker;
     },
-    checkerPatterns(){
-      return this.pockets[this.selectedPocket].selectedLayer > 1
-        ? this.$store.state.patterns.filter(pattern => pattern.icsp === false ? pattern : null)
-        : this.$store.state.patterns
+    patternsChecker(){
+      const notFirstLayer = this.layerSelected > 1; 
+      return notFirstLayer ? this.patterns.filter(pattern => !pattern.icsp) : this.patterns;
     },
-    kidsPatterns(){
-      const kidsP = this.$store.state.patterns.filter(pattern => pattern.kids ? pattern : null)
-      return this.pockets[this.selectedPocket].selectedLayer > 1
-        ? kidsP.filter(pattern => pattern.icsp === false ? pattern : null)
-        : kidsP
+    patternsKid(){
+      const patternsKid = this.patterns.filter(pattern => pattern.kids);
+      const notFirstLayer = this.layerSelected > 1; 
+      return notFirstLayer ? patternsKid.filter(pattern => !pattern.icsp) : patternsKid;
     },
-    filteredColors() {
-      return this.selectedPattern.icsp ? this.icColors : this.noBlackColors
+    idIcPattern(){
+      return this.patternSelected.icsp;
     },
-    noBlackColors(){
-      return this.$store.getters.filteredColors.filter(color => color.id !== 'black')
+    colorsWithoutBlack(){
+      return this.colorsWithShopColor.filter(color => color.id !== 'black');
     },
-    icColors(){
-      return this.$store.getters.filteredColors.filter(color => color.ic ? color : null)
+    colorsForIC(){
+      return this.colorsWithShopColor.filter(color => color.ic);
+    },
+    colorsFiltered() {
+      return this.idIcPattern ? this.colorsForIC : this.colorsWithoutBlack;
     },
   },
   async mounted() {
     try {
-      await this.$store.dispatch('bindCollections')
+      await this.$store.dispatch('bindCollections');
     } catch (e) {
-      console.error(e)
+      alert(e);
     }
   },
   methods: {
     changeShop(value) {
-      this.$store.commit('selection/SET_SHOP_SELECTION', value)
+      this.$store.commit('selection/SET_SHOP_SELECTION', value);
 
-      if (this.selectedJeans.exclusive.length > 0 && this.selectedJeans.exclusive.includes(value.id) === false) {
-        this.changeJeans(this.$store.state.jeans[0])
-      }
 
-      this.$store.state.selection.pocket.forEach((pocket, pocketIndex) => {
+      this.pocketsStore.forEach((pocket, pocketIndex) => {
         pocket.forEach((layer, layerIndex) => {
-          if ('id' in layer.color && layer.color.id.startsWith('limited')) {
+          if('id' in layer.color && layer.color.id.startsWith('limited')) {
             this.$store.commit('selection/LIMITED_COLOR_CHANGER', {
               pocket: pocketIndex,
               layer: layerIndex,
@@ -283,76 +272,81 @@ export default {
                 display: '限定',
                 ic: true,
                 id: `limitedcolor-${value.id}`,
-                order: this.$store.state.colors.length + 1,
+                order: this.colors.length + 1,
               },
-            })
-          }
-        })
-      })
+            });
+          };
+        });
+      });
+
+      if(this.selectedJeans.exclusive.length > 0 && !this.selectedJeans.exclusive.includes(value.id)) {
+        this.changeJeans(this.jeans[0]);
+      };
     },
     changeJeans(value) {
-      this.$store.commit('selection/SET_JEANS_SELECTION', value)
+      this.$store.commit('selection/SET_JEANS_SELECTION', value);
     },
     changePattern(pocketIndex, layer) {
       const value = this.$refs[`pattern-${pocketIndex}${layer}`][0].select;
-      if (typeof value !== 'undefined') {
-        this.selectedPattern = this.filteredPatterns[value];
-        if (this.selectedPattern.icsp) {
-          this.$refs[`color-${pocketIndex}${layer}`][0].select = 0;
-          this.changeColor(pocketIndex, layer, false);
-        }
-        if (this.selectedColor.id === 'black' && this.selectedPattern.icsp === false) {
-          this.$refs[`color-${pocketIndex}${layer}`][0].select = 0;
-          this.changeColor(pocketIndex, layer, true);
-        }
+      if(typeof value !== 'undefined') {
+        this.patternSelected = this.patternsFiltered[value];
+        switch (this.idIcPattern) {
+          case true:
+            this.$refs[`color-${pocketIndex}${layer}`][0].select = 0;
+            this.changeColor(pocketIndex, layer, false);
+            break;
+          case false:
+          case this.colorSelected.id === 'black':
+            this.$refs[`color-${pocketIndex}${layer}`][0].select = 0;
+            this.changeColor(pocketIndex, layer, true);
+            break;
+          default:
+            break;
+        };
         this.$store.commit('selection/SET_PATTERN_SELECTION', {
-          pocket: this.selectedPocket,
-          layer: this.selectedLayers[this.selectedPocket],
-          pattern: this.filteredPatterns[value],
+          pocket: this.pocketSelected,
+          // this.layerSelected - 1 because vuetify starts the count at 1 and not 0. We need an index
+          layer: this.layerSelected - 1,
+          pattern: this.patternsFiltered[value],
         });
       }
     },
     changeColor(pocketIndex, layer, checker) {
-      let value = 0;
+      let value;
       checker ? value = this.$refs[`color-${pocketIndex}${layer}`][0].select : value = 0;
-      if (typeof value !== 'undefined') {
-        this.selectedColor = this.filteredColors[value];
+      if(typeof value !== 'undefined') {
+        this.colorSelected = this.colorsFiltered[value];
         this.$store.commit('selection/SET_COLOR_SELECTION', {
-          pocket: this.selectedPocket,
-          layer: this.selectedLayers[this.selectedPocket],
-          color: this.filteredColors[value],
+          pocket: this.pocketSelected,
+          // this.layerSelected - 1 because vuetify starts the count at 1 and not 0. We need an index
+          layer: this.layerSelected - 1,
+          color: this.colorsFiltered[value],
         });
       }
     },
     deleteLayer() {
-      const pattern = this.$refs[
-        `pattern-${this.selectedPocket}${
-          this.pockets[this.selectedPocket].selectedLayer
-        }`
-      ][0];
-      const color = this.$refs[
-        `color-${this.selectedPocket}${
-          this.pockets[this.selectedPocket].selectedLayer
-        }`
-      ][0];
+      const pattern = this.$refs[`pattern-${this.pocketSelected}${this.layerSelected}`][0];
+      const color = this.$refs[`color-${this.pocketSelected}${this.layerSelected}`][0];
+
       this.$store.commit('selection/DELETE_LAYER', {
-        pocket: this.selectedPocket,
+        pocket: this.pocketSelected,
       });
-      this.selectedPattern = {icsp: false};
+      this.patternSelected = { };
       pattern.reset();
       color.reset();
-      if (this.pockets[this.selectedPocket].selectedLayer > 1)
-        this.pockets[this.selectedPocket].selectedLayer -= 1
+      if(this.layerSelected > 1) {
+        this.pocketsBinder[this.pocketSelected].layerSelected -= 1;
+      };
     },
     paintReset() {
       this.$store.commit('selection/PAINT_RESET')
       // i is the pocketIndex 0 for left, 1 for right
-      for (let i = 1; i >= 0; i--) {
-        this.selectedPocket = i
-        // j is the selectedLayer, from 1 (bottom) to 3 (top)
-        for (let j = 3; j >= 1; j--) {
-          this.pockets[i].selectedLayer = j
-          if (
+      for(let i = 1; i >= 0; i--) {
+        this.pocketSelected = i
+        // j is the layerSelected, from 1 (bottom) to 3 (top)
+        for(let j = 3; j >= 1; j--) {
+          this.pocketsBinder[i].layerSelected = j;
+          if(
             typeof this.$refs[`pattern-${i}${j}`] !== 'undefined' &&
             typeof this.$refs[`color-${i}${j}`] !== 'undefined'
           ) {
