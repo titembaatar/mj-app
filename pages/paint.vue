@@ -45,7 +45,9 @@
           </v-btn>
         </v-col>
         <v-col class="justify-end">
-          <v-btn :color="selectedShop.color" outlined height="40px">印刷</v-btn>
+          <NuxtLink to="/print">
+            <v-btn :color="selectedShop.color" outlined height="40px">印刷</v-btn>
+          </NuxtLink>
         </v-col>
       </v-row>
       <v-row class="px-4">
