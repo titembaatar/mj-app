@@ -260,7 +260,7 @@ export default {
   },
   mounted: function () {
     print();
-    this.$router.push('/paint');
+    // this.$router.push('/paint');
   },
 }
 </script>
