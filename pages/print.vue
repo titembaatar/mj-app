@@ -237,7 +237,7 @@ import { mapState, mapGetters } from 'vuex';
 import svgPattern from '~/components/svgPattern.vue';
 
 export default {
-  components: { svgPattern },
+  components: { svgPocket, svgPattern },
   data() {
     return {
     }
