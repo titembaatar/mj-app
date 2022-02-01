@@ -82,18 +82,4 @@ export const getters = {
       state.colorsLoaded
     );
   },
-  colorsWithShopColor(state, getters) {
-    if (getters.loaded) {
-      return [{
-        color: state.selection.selectedShop.color,
-        colorDisplay: state.selection.selectedShop.colorDisplay,
-        display: '限定',
-        ic: true,
-        id: `limitedcolor-${state.selection.selectedShop.id}`,
-        order: state.colors.length + 1,
-      }].concat(state.colors);
-    } else {
-      return state.colors;
-    }
-  },
 }

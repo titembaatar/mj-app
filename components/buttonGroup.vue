@@ -4,7 +4,7 @@
     :color="color"
     @change="$emit('change', select)"
   >
-    <v-btn v-for="object in array" :key="object.id" v-text="object.display" />
+    <v-btn v-for="object in array" :key="object.id" v-text="object.display"/>
   </v-btn-toggle>
 </template>
 

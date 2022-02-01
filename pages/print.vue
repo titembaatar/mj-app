@@ -170,36 +170,40 @@
       </tr>
       <tr class="ro2">
         <td colspan="2" rowspan="12" style="text-align:left;width:3.8in; " class="ce14">
-          <svg viewBox="0 0 500 500">
-            <svg-pocket
-              :jeans="selectedJeans"
-              :stitch="false"
-              :sp="false"
-            />
-            <svg-pattern
-              v-for="(layer, index) in pocketsStore[0]"
-              :key="index"
-              :color="layer.color.color"
-              :path="layer.pattern.path"
-              :icsp="layer.pattern.icsp"
-            />
-          </svg>
+          <div v-if="pocketsStore[0].length > 0">
+            <svg viewBox="0 0 500 500">
+              <svg-pocket
+                :jeans="selectedJeans"
+                :stitch="false"
+                :sp="false"
+              />
+              <svg-pattern
+                v-for="(layer, index) in pocketsStore[0]"
+                :key="index"
+                :color="layer.color.color"
+                :path="layer.pattern.path"
+                :icsp="layer.pattern.icsp"
+              />
+            </svg>
+          </div>
         </td>
         <td colspan="2" rowspan="12" style="text-align:left;width:3.8in; " class="ce14">
-          <svg viewBox="0 0 500 500">
-            <svg-pocket
-              :jeans="selectedJeans"
-              :stitch="selectedJeans.stitch"
-              :sp="selectedJeans.stripes"
-            />
-            <svg-pattern
-              v-for="(layer, index) in pocketsStore[1]"
-              :key="index"
-              :color="layer.color.color"
-              :path="layer.pattern.path"
-              :icsp="layer.pattern.icsp"
-            />
-          </svg>
+          <div v-if="pocketsStore[1].length > 0">
+            <svg viewBox="0 0 500 500">
+              <svg-pocket
+                :jeans="selectedJeans"
+                :stitch="selectedJeans.stitch"
+                :sp="selectedJeans.stripes"
+              />
+              <svg-pattern
+                v-for="(layer, index) in pocketsStore[1]"
+                :key="index"
+                :color="layer.color.color"
+                :path="layer.pattern.path"
+                :icsp="layer.pattern.icsp"
+              />
+            </svg>
+          </div>
         </td>
       </tr>
       <tr class="ro2"/>
@@ -234,10 +238,11 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex';
+import svgPocket from '~/components/svgPocket.vue';
 import svgPattern from '~/components/svgPattern.vue';
 
 export default {
-  components: { svgPattern },
+  components: { svgPattern, svgPocket },
   data() {
     return {
     }
@@ -260,7 +265,7 @@ export default {
   },
   mounted: function () {
     print();
-    this.$router.push('/paint');
+    this.$router.push('/');
   },
 }
 </script>
