@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.0"
+   width="75.000000pt"
+   height="75.000000pt"
+   viewBox="0 0 75.000000 75.000000"
+   preserveAspectRatio="xMidYMid meet"
+   id="svg31"
+   sodipodi:docname="favicon.svg"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs35" />
+  <sodipodi:namedview
+     id="namedview33"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="pt"
+     showgrid="false"
+     inkscape:zoom="5.805"
+     inkscape:cx="61.757106"
+     inkscape:cy="50.732127"
+     inkscape:window-width="2560"
+     inkscape:window-height="1369"
+     inkscape:window-x="-8"
+     inkscape:window-y="40"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g29" />
+  <g
+     transform="translate(0.000000,75.000000) scale(0.100000,-0.100000)"
+     fill="#000000"
+     stroke="none"
+     id="g29">
+    <path
+       d="m 39.168756,633.67786 2.701055,-73.27734 H 375 708.13019 l 2.70105,73.27734 2.70106,72.39449 H 375 36.4677 Z"
+       id="path23"
+       style="stroke-width:0.891563" />
+    <path
+       d="M 46.371571,419.14298 V 388.24289 H 374.09965 701.82773 l 3.6014,30.90009 3.60141,30.90009 H 377.70106 46.371571 Z"
+       id="path25"
+       style="stroke-width:0.891563" />
+    <path
+       id="path27"
+       style="stroke-width:0.891561"
+       d="m 53.577023,326.43841 6.304222,-45.91042 c 3.601407,-24.72007 10.803343,-63.55468 17.105806,-85.62618 L 86.891801,155.17313 230.93931,99.550393 374.10317,43.927649 507.34908,94.248057 c 73.82886,27.368653 139.56158,53.856163 146.76439,59.153323 5.47308,4.02505 23.23857,103.44994 36.09761,173.03703 H 374.10317 Z"
+       sodipodi:nodetypes="cccccccsccc" />
+  </g>
+</svg>

@@ -9,16 +9,16 @@
           width="10"
         />
       </v-overlay>
-      <v-row class="items-start pa-2">
-        <v-col>
+      <v-row class="items-start md:pa-2 <md:pa-0">
+        <v-col class="mdmenu">
           <NuxtLink to="/">
             <icon-logo height="3em" :color="selectedShop.color"></icon-logo>
           </NuxtLink>
         </v-col>
-        <v-col>
+        <v-col class="<md:hidden">
           <h1>ペイント</h1>
         </v-col>
-        <v-col>
+        <v-col class="mdmenu">
           <dropdown-menu
             :title="selectedShop.display"
             :items="$store.state.shops"
@@ -26,7 +26,7 @@
             @input="changeShop"
           />
         </v-col>
-        <v-col>
+        <v-col class="mdmenu">
           <dropdown-menu
             :title="selectedJeans.display"
             :items="jeans"
@@ -34,7 +34,7 @@
             @input="changeJeans"
           />
         </v-col>
-        <v-col class="justify-end">
+        <v-col class="justify-end mdmenu <md:(-mt-8)">
           <v-btn
             :color="selectedShop.color"
             outlined
@@ -44,7 +44,7 @@
             リセット
           </v-btn>
         </v-col>
-        <v-col class="justify-end">
+        <v-col class="justify-end mdmenu <md:(-mt-8 text-right)">
           <NuxtLink to="/print">
             <v-btn :color="selectedShop.color" outlined height="40px">印刷</v-btn>
           </NuxtLink>
@@ -100,13 +100,15 @@
             }}</v-tab>
           </v-tabs>
 
-          <v-tabs-items v-model="pocketSelected">
+          <v-tabs-items v-model="pocketSelected" touchless>
             <v-tab-item v-for="pocket in pocketsBinder" :key="pocket.key">
               <v-stepper v-model="pocket.layerSelected" flat>
                 <v-stepper-header class="!shadow-none max-w-lg">
                   <v-btn
                     :color="selectedShop.color"
                     dark
+                    :fab="$vuetify.breakpoint.xsOnly"
+                    :small="$vuetify.breakpoint.xsOnly"
                     class="align-self-center"
                     outlined
                     :disabled="pocket.layerSelected < 2 ? true : false"
@@ -117,6 +119,8 @@
                   <v-btn
                     :color="selectedShop.color"
                     dark
+                    :fab="$vuetify.breakpoint.xsOnly"
+                    :small="$vuetify.breakpoint.xsOnly"
                     class="align-self-center"
                     outlined
                     :disabled="!isNextLayerExists"
@@ -140,6 +144,8 @@
                   v-if="!patternSelected.icsp"
                     :color="selectedShop.color"
                     dark
+                    :fab="$vuetify.breakpoint.xsOnly"
+                    :small="$vuetify.breakpoint.xsOnly"
                     class="align-self-center"
                     outlined
                     :disabled="pocket.layerSelected > 2 ? true : false"
@@ -164,7 +170,7 @@
                         :array="patternsFiltered"
                         :selected-shop="selectedShop"
                         :color="selectedShop.color"
-                        class="pb-2"
+                        class="pb-2 <md:overflow-auto"
                         @change="changePattern(pocket.index, layer)"
                       />
                       <button-group
@@ -172,6 +178,8 @@
                         :array="colorsWithShopColor"
                         :selected-shop="selectedShop"
                         :color="selectedShop.color"
+                        :isIc="idIcPattern"
+                        class="<md:overflow-auto"
                         @change="changeColor(pocket.index, layer, true)"
                       />
                     </v-row>
@@ -241,14 +249,22 @@ export default {
       return this.patternSelected.icsp;
     },
     colorsWithShopColor(){
-      return [{
+      // return [{
+      //   color: this.selectedShop.color,
+      //   colorDisplay: this.selectedShop.colorDisplay,
+      //   display: '限定',
+      //   ic: true,
+      //   id: `limitedcolor-${this.selectedShop.id}`,
+      //   order: -1,
+      // }].concat(this.colors)
+      return this.colors.concat([{
         color: this.selectedShop.color,
         colorDisplay: this.selectedShop.colorDisplay,
         display: '限定',
         ic: true,
         id: `limitedcolor-${this.selectedShop.id}`,
         order: -1,
-      }].concat(this.colors)
+      }])
     },
     // colorsWithoutBlack(){
     //   return this.colorsWithShopColor.filter(color => color.id !== 'black');
@@ -270,8 +286,6 @@ export default {
   methods: {
     changeShop(value) {
       this.$store.commit('selection/SET_SHOP_SELECTION', value);
-
-
       // this.pocketsStore.forEach((pocket, pocketIndex) => {
       //   pocket.forEach((layer, layerIndex) => {
       //     if('id' in layer.color && layer.color.id.startsWith('limited')) {
@@ -304,7 +318,7 @@ export default {
         this.patternSelected = this.patternsFiltered[value];
         switch (this.idIcPattern) {
           case true:
-            this.$refs[`color-${pocketIndex}${layer}`][0].select = 1;
+            this.$refs[`color-${pocketIndex}${layer}`][0].select = 0;
             this.changeColor(pocketIndex, layer, false);
             break;
           case false:
@@ -314,7 +328,7 @@ export default {
         };
 
         if (!this.idIcPattern && this.colorSelected.id === 'black') {
-          this.$refs[`color-${pocketIndex}${layer}`][0].select = 0;
+          this.$refs[`color-${pocketIndex}${layer}`][0].select = 1;
           this.changeColor(pocketIndex, layer, true);
         };
 
@@ -328,7 +342,7 @@ export default {
     },
     changeColor(pocketIndex, layer, checker) {
       let value;
-      checker ? value = this.$refs[`color-${pocketIndex}${layer}`][0].select : value = 1;
+      checker ? value = this.$refs[`color-${pocketIndex}${layer}`][0].select : value = 0;
       if(typeof value !== 'undefined') {
         this.colorSelected = this.colorsWithShopColor[value];
         this.$store.commit('selection/SET_COLOR_SELECTION', {
@@ -380,4 +394,10 @@ svg {
   max-height:60vh;
   margin: auto;
 }
+@media (max-width:767.9px) {
+  .mdmenu {
+    flex-basis: 30% !important;
+  }
+}
+  
 </style>
